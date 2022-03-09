@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.sendFile('index.html')
+  res.sendFile(__dirname + '/index.html');
 });
 
 app.get('/youtube/*', async (req, res) => {
