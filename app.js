@@ -10,51 +10,85 @@ app.get('/', (req, res) => {
 });
 
 app.get('/youtube/*', async (req, res) => {
-    const path = req.path.replace('/youtube', '').replace('/', '');
-    const link = await fetch(
-        `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${path}&key=AIzaSyDpL6Q7EnBQXhYuYn7kMqoogAH7tzCmOHQ`,
-    );
-    const reqs = await link.json();
-    if (reqs.pageInfo.totalResults == 0) {
+    try {
+        const path = req.path.replace('/youtube', '').replace('/', '');
+        const link = await fetch(
+            `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${path}&key=${process.env.YOUTUBE_API_KEY}`,
+        );
+        const reqs = await link.json();
+        if (reqs.pageInfo.totalResults == 0) {
+            res.json({
+                code: 404,
+                message:
+                    'Channel not found, check if you provided channel ID, not name',
+            });
+            return;
+        }
         res.json({
-            code: 404,
-            message:
-                'Channel not found, check if you provided channel ID, not name',
+            subscribers: reqs.items[0].statistics.subscriberCount,
+            views: reqs.items[0].statistics.viewCount,
         });
-        return;
+    } catch (err) {
+        console.log(err);
+        res.json({ code: 500, message: err });
     }
-    res.json({
-        subscribers: reqs.items[0].statistics.subscriberCount,
-        views: reqs.items[0].statistics.viewCount,
-    });
 });
 
 app.get('/discord/*', async (req, res) => {
-    const path = req.path.replace('/discord', '').replace('/', '');
-    const link = await fetch(
-        `https://discordapp.com/api/v9/invites/${path}?with_counts=true`,
-    );
-    const reqs = await link.json();
-    if (reqs.code == 10006) {
-        res.json({
-            code: 404,
-            message:
-                'Guild not found, check if you provided Invite Code, not Guild ID',
-        });
-        return;
-    } else {
-        res.json({
-            name: reqs.guild.name,
-            members: reqs.approximate_member_count,
-            online: reqs.approximate_presence_count,
-            boosts: reqs.guild.premium_subscription_count,
-        });
+    try {
+        const path = req.path.replace('/discord', '').replace('/', '');
+        const link = await fetch(
+            `https://discordapp.com/api/v9/invites/${path}?with_counts=true`,
+        );
+        const reqs = await link.json();
+        if (reqs.code == 10006) {
+            res.json({
+                code: 404,
+                message:
+                    'Guild not found, check if you provided Invite Code, not Guild ID',
+            });
+            return;
+        } else {
+            res.json({
+                name: reqs.guild.name,
+                members: reqs.approximate_member_count,
+                online: reqs.approximate_presence_count,
+                boosts: reqs.guild.premium_subscription_count,
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        res.json({ code: 500, message: err });
     }
 });
 
+//Twitter API
+
 app.get('/twitter/*', async (req, res) => {
-    const path = req.path.replace('/twitter', '').replace('/', '');
-    // still trying to figure out how to get the followers count
+    let followers;
+    const twitterAuth = {
+        Authorization: `Bearer ${process.env.TWITTER_TOKEN}`,
+    };
+
+    await fetch(
+        `https://api.twitter.com/2/users/by/username/${req.path
+            .replace('/twitter', '')
+            .replace('/', '')}`,
+        {
+            headers: twitterAuth,
+        },
+    )
+        .then((res) => res.json())
+        .then((json) => {
+            user = json.data.id;
+        });
+    await fetch(`https://api.twitter.com/2/users/${user}/followers`, {
+        headers: twitterAuth,
+    })
+        .then((res) => res.json())
+        .then((json) => {
+            followers = json.data.id;
+        });
 });
 
 //TWITCH API
@@ -75,7 +109,6 @@ app.get('/twitch/*', async (req, res) => {
             'Client-ID': process.env.TWITCH_CLIENT_ID,
             'Authorization': `Bearer ${twitchOauth}`,
         };
-        let user;
         await fetch(
             `https://api.twitch.tv/helix/users?login=${req.path
                 .replace('/twitch', '')
@@ -87,14 +120,12 @@ app.get('/twitch/*', async (req, res) => {
         )
             .then((res) => res.json())
             .then((res) => (user = res.id));
-        let followers;
         await fetch(`https://api.twitch.tv/helix/users/follows?to_id=${user}`, {
             method: 'GET',
             headers: twitchAuth,
         })
             .then((res) => res.json())
             .then((res) => (followers = res.total));
-        let subs;
         await fetch(
             `https://api.twitch.tv/helix/subscriptions?broadcaster_id=${user}`,
             {
