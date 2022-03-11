@@ -30,6 +30,11 @@ app.get('/discord/*', async (req, res) => {
   }
 });
 
+app.get('/twitter/*', async (req,res) => {
+  const path = req.path.replace('/twitter', '').replace('/', '');
+  // still trying to figure out how to get the followers count
+});
+
 app.get('*', (req, res) => {
   res.json({code: 404, message: 'Not Found'});
 });
