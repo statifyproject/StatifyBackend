@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const app = express();
 
@@ -120,11 +120,11 @@ app.get('/twitch/*', async (req, res) => {
         })
             .then(res => res.json())
             .then(res => console.log(res.total));
+        res.json({
+            followers: followers,
+            subs: subs,
+        });
     };
-    res.json({
-        followers: followers,
-        subs: subs,
-    });
 });
 
 app.get('*', (req, res) => {
