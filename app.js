@@ -2,11 +2,17 @@ const twitter = true; //Twitter API
 require("dotenv").config();
 const express = require("express");
 const fetch = require("node-fetch");
+const { getFollowers } = require("noblox.js");
 
 const app = express();
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
+});
+
+app.get("/roblox/:userId", async (req, res) => {
+  const data = await getFollowers(req.params.userId);
+  res.json({ followers: data.data.length });
 });
 
 app.get("/youtube/*", async (req, res) => {
