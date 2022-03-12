@@ -3,10 +3,7 @@
         "babel": "^6.23.0",
         "dotenv": "^16.0.0",
         "express": "^4.17.3",
-        "noblox.js": "^4.13.1",
-        "node-fetch": "^2.6.5",
-        "twitch-fetcher": "^1.1.1",
-        "v2-twitter": "^1.0.23"
+        "node-fetch": "^2.6.5"
     },
     "scripts": {
         "start": "node app.js"
