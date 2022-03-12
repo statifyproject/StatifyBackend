@@ -4,7 +4,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 
 const app = express();
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -24,6 +24,7 @@ app.get('/roblox/:user', async (req, res) => {
                 .then(res => res.json())
                 .then(json => (data.friends = json.data.length));
             res.json({
+                code: 200,
                 followers: data.followers,
                 username: data.username,
                 online: data.online,
@@ -31,17 +32,18 @@ app.get('/roblox/:user', async (req, res) => {
                 friends: data.friends,
             });
         } else {
-            throw new Error('Please enter a username, not a user ID');
+            res.json({code: 400, message: 'Please enter a username, not a user ID'});
         }
     } catch (err) {
-        res.json({code: 400, message: err.message});
+        res.json({code: 500, message: err.message});
+        console.log(`threw 500 error: ${err.message}`);
     }
 });
 
 app.get('/youtube/*', async (req, res) => {
     const path = req.path.replace('/youtube', '').replace('/', '');
     const link = await fetch(
-        `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${path}&key=AIzaSyDpL6Q7EnBQXhYuYn7kMqoogAH7tzCmOHQ`
+        `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${path}&key=${process.env.YOUTUBE_API_KEY}`
     );
     const reqs = await link.json();
     if (reqs.pageInfo.totalResults == 0) {
@@ -78,57 +80,76 @@ app.get('/discord/*', async (req, res) => {
 });
 
 app.get('/twitter/:username', async (req, res) => {
-    const user = await twitter.getUserByUsername(req.params.username || '', ['public_metrics']);
-    res.json({
-        followers: user.data.public_metrics.followers_count,
-        tweet_count: user.data.public_metrics.tweet_count,
-    });
-});
-//TWITCH API
-
-app.get('/twitch/*', async (req, res) => {
-    let subs, followers, user;
-    async () => {
-        let twitchOauth;
-        await fetch(
-            `https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`,
-            {
-                method: 'POST',
-            }
-        )
-            .then(res => res.json())
-            .then(res => (twitchOauth = res.access_token));
-        const twitchAuth = {
-            'Client-ID': process.env.TWITCH_CLIENT_ID,
-            Authorization: `Bearer ${twitchOauth}`,
-        };
-        await fetch(`https://api.twitch.tv/helix/users?login=${req.path.replace('/twitch', '').replace('/', '')}`, {
-            method: 'GET',
-            headers: twitchAuth,
-        })
-            .then(res => res.json())
-            .then(res => (user = res.id));
-        await fetch(`https://api.twitch.tv/helix/users/follows?to_id=${user}`, {
-            method: 'GET',
-            headers: twitchAuth,
-        })
-            .then(res => res.json())
-            .then(res => (followers = res.total));
-        await fetch(`https://api.twitch.tv/helix/subscriptions?broadcaster_id=${user}`, {
-            method: 'GET',
-            headers: twitchAuth,
-        })
-            .then(res => res.json())
-            .then(res => console.log(res.total));
+    try {
+        const user = await twitter.getUserByUsername(req.params.username || '', ['public_metrics']);
         res.json({
-            followers: followers,
-            subs: subs,
+            followers: user.data.public_metrics.followers_count,
+            tweet_count: user.data.public_metrics.tweet_count,
         });
-    };
+    } catch (err) {
+        res.json({code: 500, message: err.message});
+        console.log(`threw 500 error: ${err.message}`);
+    }
 });
 
-app.get('*', (req, res) => {
-    res.json({code: 404, message: 'Not Found'});
+app.get('/twitch/:user', async (req, res) => {
+    try {
+        let data = [
+                //(subs = Number),
+                (viewers = Number),
+                (followers = Number),
+                (id = Number),
+                (username = req.params.user),
+            ],
+            twitchOauth = String;
+        if (isNaN(data.username)) {
+            await fetch(
+                `https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`,
+                {
+                    method: 'POST',
+                }
+            )
+                .then(res => res.json())
+                .then(json => (twitchOauth = json.access_token));
+            const twitchAuth = {
+                'Client-ID': process.env.TWITCH_CLIENT_ID,
+                Authorization: `Bearer ${twitchOauth}`,
+            };
+            await fetch(`https://api.twitch.tv/helix/users?login=${data.username}`, {
+                headers: twitchAuth,
+            })
+                .then(res => res.json())
+                .then(json => (data.id = json.data[0].id));
+            await fetch(`https://api.twitch.tv/helix/users/follows?to_id=${data.id}`, {
+                headers: twitchAuth,
+            })
+                .then(res => res.json())
+                .then(json => (data.followers = json.total));
+            /*await fetch(`https://api.twitch.tv/helix/subscriptions?broadcaster_id=${data.id}`, {
+                headers: twitchAuth,
+            })
+                .then(res => res.json())
+                .then(json => console.log(json));
+            */ // we need the users authorization to get this.
+            res.json({
+                code: 200,
+                followers: data.followers,
+                //subs: data.subs,
+                id: data.id,
+            });
+        } else {
+            res.json({
+                code: 400,
+                message: 'Please enter a username, not a user ID',
+            });
+        }
+    } catch (err) {
+        res.json({code: 500, message: err.message});
+        console.log(`threw 500 error: ${err.message}`);
+    }
+});
+app.get('*', (_req, res) => {
+    res.json({code: 404, message: 'Invalid Directory'});
 });
 
 app.listen(3000, () => {
