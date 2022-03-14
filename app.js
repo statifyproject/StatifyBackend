@@ -5,30 +5,40 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const app = express();
 
 app.get('/', (_req, res) => {
-    res.sendFile(__dirname + '/page/index.html');
+    res.sendFile(__dirname + '/index.html');
 });
 
 app.get('/roblox/:user', async (req, res) => {
     let data = {
-        username: String,
+        username: req.params.user,
         online: Boolean,
         followers: Number,
         userID: Number,
         friends: Number,
+        success: Boolean,
+        error: String,
     };
     try {
         if (isNaN(req.params.user)) {
-            await fetch(`https://api.roblox.com/users/get-by-username?username=${req.params.user}`)
+            await fetch(`https://api.roblox.com/users/get-by-username?username=${data.username}`)
                 .then(res => res.json())
                 .then(
-                    json => ((data.username = json.Username), (data.online = json.IsOnline), (data.userID = json.Id))
+                    json => (
+                        (data.online = json.IsOnline),
+                        (data.userID = json.Id),
+                        (data.success = json?.success),
+                        (data.error = json?.errorMessage)
+                    )
                 );
+            if (data.success == false) {
+                throw new Error(`Roblox API Error: ${data.error}`);
+            }
             await fetch(`https://friends.roblox.com/v1/users/${data.userID}/followers/count`)
                 .then(res => res.json())
                 .then(json => (data.followers = json.count));
-            await fetch(`https://friends.roblox.com/v1/users/${data.userID}/friends`)
+            await fetch(`https://friends.roblox.com/v1/users/${data.userID}/friends/count`)
                 .then(res => res.json())
-                .then(json => (data.friends = json.data.length));
+                .then(json => (data.friends = json.count));
             res.json({
                 code: 200,
                 followers: data.followers,
@@ -41,8 +51,16 @@ app.get('/roblox/:user', async (req, res) => {
             res.json({code: 400, message: 'Please enter a username, not a user ID'});
         }
     } catch (err) {
-        res.json({code: 500, message: err.message});
-        console.log(`threw 500 error: ${err.message}`);
+        if (err.message == 'Roblox API Error: User not found') {
+            res.json({
+                code: 404,
+                message: 'User not found',
+            });
+        } else {
+            res.json({code: 500, message: err.message});
+            console.log(`threw 500 error: ${err.message}`);
+            console.log(err);
+        }
     }
 });
 
@@ -105,6 +123,7 @@ app.get('/twitter/:user', async (req, res) => {
             id: Number,
             following: Number,
             tweets: Number,
+            error: String,
         };
         if (isNaN(data.user)) {
             const twitterAuth = {
@@ -115,8 +134,12 @@ app.get('/twitter/:user', async (req, res) => {
             })
                 .then(res => res.json())
                 .then(json => {
-                    data.id = json.data.id;
+                    data.error = json?.errors[0].detail;
+                    data.id = json.data?.id;
                 });
+            if (data.error == `Could not find user with username: [${data.username}].`) {
+                throw new Error(`Twitter API Error: User not found`);
+            }
             await fetch(`https://api.twitter.com/2/users/${data.id}?user.fields=public_metrics`, {
                 headers: twitterAuth,
             })
@@ -141,8 +164,15 @@ app.get('/twitter/:user', async (req, res) => {
             });
         }
     } catch (err) {
-        res.json({code: 500, message: err.message});
-        console.log(`threw 500 error: ${err.message}`);
+        if (err.message == 'Twitter API Error: User not found') {
+            res.json({
+                code: 404,
+                message: 'User not found',
+            });
+        } else {
+            res.json({code: 500, message: err.message});
+            console.log(`threw 500 error: ${err.message}`);
+        }
     }
 });
 
@@ -174,7 +204,10 @@ app.get('/twitch/:user', async (req, res) => {
                 headers: twitchAuth,
             })
                 .then(res => res.json())
-                .then(json => (data.id = json.data[0].id));
+                .then(json => (data.id = json.data[0]?.id));
+            if (data.id == undefined) {
+                throw new Error(`Twitch API Error: User not found`);
+            }
             await fetch(`https://api.twitch.tv/helix/users/follows?to_id=${data.id}`, {
                 headers: twitchAuth,
             })
@@ -199,8 +232,15 @@ app.get('/twitch/:user', async (req, res) => {
             });
         }
     } catch (err) {
-        res.json({code: 500, message: err.message});
-        console.log(`threw 500 error: ${err.message}`);
+        if (err.message == 'Twitch API Error: User not found') {
+            res.json({
+                code: 404,
+                message: 'User not found',
+            });
+        } else {
+            res.json({code: 500, message: err.message});
+            console.log(`threw 500 error: ${err.message}`);
+        }
     }
 });
 app.get('*', (_req, res) => {
