@@ -141,6 +141,8 @@ app.get('/twitter/:user', async (req, res) => {
             following: Number,
             tweets: Number,
             error: String,
+            verified: Boolean,
+            avatar: String,
         };
         if (isNaN(data.user)) {
             const twitterAuth = {
@@ -151,20 +153,27 @@ app.get('/twitter/:user', async (req, res) => {
             })
                 .then(res => res.json())
                 .then(json => {
-                    data.error = json?.errors[0].detail;
+                    try {
+                        data.error = json?.errors[0].detail;
+                    } catch (err) {}
                     data.id = json.data?.id;
                 });
             if (data.error == `Could not find user with username: [${data.username}].`) {
                 throw new Error(`Twitter API Error: User not found`);
             }
-            await fetch(`https://api.twitter.com/2/users/${data.id}?user.fields=public_metrics`, {
-                headers: twitterAuth,
-            })
+            await fetch(
+                `https://api.twitter.com/2/users/${data.id}?user.fields=public_metrics,profile_image_url,verified`,
+                {
+                    headers: twitterAuth,
+                }
+            )
                 .then(res => res.json())
                 .then(json => {
                     data.followers = json.data.public_metrics.followers_count;
                     data.following = json.data.public_metrics.following_count;
                     data.tweets = json.data.public_metrics.tweet_count;
+                    data.verified = json.data.verified;
+                    data.avatar = json.data.profile_image_url;
                 });
             res.json({
                 code: 200,
@@ -173,6 +182,8 @@ app.get('/twitter/:user', async (req, res) => {
                 id: data.id,
                 following: data.following,
                 tweets: data.tweets,
+                verified: data.verified,
+                avatar: data.avatar,
             });
         } else {
             res.json({
@@ -200,7 +211,8 @@ app.get('/twitch/:user', async (req, res) => {
                 username: req.params.user,
                 followers: Number,
                 id: Number,
-                viewers: Number,
+                views: Number,
+                avatar: String,
                 //subs: Number,
             };
 
@@ -221,7 +233,11 @@ app.get('/twitch/:user', async (req, res) => {
                 headers: twitchAuth,
             })
                 .then(res => res.json())
-                .then(json => (data.id = json.data[0]?.id));
+                .then(json => {
+                    data.id = json.data[0]?.id;
+                    data.views = json.data[0]?.view_count;
+                    data.avatar = json.data[0]?.profile_image_url;
+                });
             if (data.id == undefined) {
                 throw new Error(`Twitch API Error: User not found`);
             }
@@ -241,6 +257,8 @@ app.get('/twitch/:user', async (req, res) => {
                 followers: data.followers,
                 //subs: data.subs,
                 id: data.id,
+                views: data.views,
+                avatar: data.avatar,
             });
         } else {
             res.json({
@@ -272,6 +290,7 @@ app.get('/steam/:user', async (req, res) => {
             stateCode: String,
             onlineState: String,
             rawOnlineState: Number,
+            avatar: String,
         };
         if (isNaN(data.username)) {
             await fetch(
@@ -294,6 +313,7 @@ app.get('/steam/:user', async (req, res) => {
                         (data.countryCode = json.response.players[0].loccountrycode),
                         (data.stateCode = json.response.players[0].locstatecode),
                         (data.rawOnlineState = json.response.players[0].personastate);
+                    data.avatar = json.response.players[0].avatar;
                 });
             switch (data.rawOnlineState) {
                 case 0:
@@ -325,6 +345,7 @@ app.get('/steam/:user', async (req, res) => {
                 countryCode: data.countryCode,
                 stateCode: data.stateCode,
                 onlineState: data.onlineState,
+                avatar: data.avatar,
             });
         } else {
             res.json({
