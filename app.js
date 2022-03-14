@@ -9,7 +9,13 @@ app.get('/', (_req, res) => {
 });
 
 app.get('/roblox/:user', async (req, res) => {
-    let data = [(username = String), (online = Boolean), (followers = Number), (userID = Number), (friends = Number)];
+    let data = {
+        username: String,
+        online: Boolean,
+        followers: Number,
+        userID: Number,
+        friends: Number,
+    };
     try {
         if (isNaN(req.params.user)) {
             await fetch(`https://api.roblox.com/users/get-by-username?username=${req.params.user}`)
@@ -79,12 +85,36 @@ app.get('/discord/*', async (req, res) => {
     }
 });
 
-app.get('/twitter/:username', async (req, res) => {
+app.get('/twitter/:user', async (req, res) => {
     try {
-        const user = await twitter.getUserByUsername(req.params.username || '', ['public_metrics']);
+        let data = {
+            username: req.params.user,
+            followers: Number,
+            id: Number,
+        };
+        const twitterAuth = {
+            Authorization: `Bearer ${process.env.TWITTER_TOKEN}`,
+        };
+        await fetch(`https://api.twitter.com/2/users/by/username/${data.username}`, {
+            headers: twitterAuth,
+        })
+            .then(res => res.json())
+            .then(json => {
+                console.log(json);
+                data.id = json.data.id;
+            });
+        await fetch(`https://api.twitter.com/2/users/${data.id}/followers`, {
+            headers: twitterAuth,
+        })
+            .then(res => res.json())
+            .then(json => {
+                data.followers = console.log(json.data.length);
+            });
         res.json({
-            followers: user.data.public_metrics.followers_count,
-            tweet_count: user.data.public_metrics.tweet_count,
+            code: 200,
+            followers: data.followers,
+            username: data.username,
+            id: data.id,
         });
     } catch (err) {
         res.json({code: 500, message: err.message});
@@ -94,14 +124,15 @@ app.get('/twitter/:username', async (req, res) => {
 
 app.get('/twitch/:user', async (req, res) => {
     try {
-        let data = [
-                //(subs = Number),
-                (viewers = Number),
-                (followers = Number),
-                (id = Number),
-                (username = req.params.user),
-            ],
-            twitchOauth = String;
+        let twitchOauth = String,
+            data = {
+                username: req.params.user,
+                followers: Number,
+                id: Number,
+                viewers: Number,
+                //subs: Number,
+            };
+
         if (isNaN(data.username)) {
             await fetch(
                 `https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`,
