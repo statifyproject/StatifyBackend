@@ -23,9 +23,9 @@ app.get('/roblox/:user', async (req, res) => {
                 .then(
                     json => ((data.username = json.Username), (data.online = json.IsOnline), (data.userID = json.Id))
                 );
-            await fetch(`https://friends.roblox.com/v1/users/${data.userID}/followers`)
+            await fetch(`https://friends.roblox.com/v1/users/${data.userID}/followers/count`)
                 .then(res => res.json())
-                .then(json => (data.followers = json.data.length));
+                .then(json => (data.followers = json.count));
             await fetch(`https://friends.roblox.com/v1/users/${data.userID}/friends`)
                 .then(res => res.json())
                 .then(json => (data.friends = json.data.length));
