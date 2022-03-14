@@ -1,12 +1,29 @@
 require('dotenv').config();
 const express = require('express');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const color = require('colors');
 
 const app = express();
 
 app.get('/', (_req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
+
+function log(type, query) {
+    if (type === 'error') {
+        console.log(color.red(`✖ ${query}`));
+    } else if (type === 'success') {
+        console.log(color.green(`✔ ${query}`));
+    } else if (type === 'info') {
+        console.log(color.blue(`ℹ ${query}`));
+    } else if (type === 'warning') {
+        console.log(color.yellow(`⚠ ${query}`));
+    } else if (type === 'debug') {
+        console.log(color.gray(`⚙ ${query}`));
+    } else {
+        console.log(color.gray(query));
+    }
+}
 
 app.get('/roblox/:user', async (req, res) => {
     let data = {
@@ -58,8 +75,8 @@ app.get('/roblox/:user', async (req, res) => {
             });
         } else {
             res.json({code: 500, message: err.message});
-            console.log(`threw 500 error: ${err.message}`);
-            console.log(err);
+            log('error', `Threw 500 error: ${err.message}`);
+            log('error', err);
         }
     }
 });
@@ -85,7 +102,7 @@ app.get('/youtube/:path', async (req, res) => {
         });
     } catch (err) {
         res.json({code: 500, message: err.message});
-        console.log(`threw 500 error: ${err.message}`);
+        log('error', `Threw 500 error: ${err.message}`);
     }
 });
 
@@ -111,7 +128,7 @@ app.get('/discord/:path', async (req, res) => {
         }
     } catch (err) {
         res.json({code: 500, message: err.message});
-        console.log(`threw 500 error: ${err.message}`);
+        log('error', `Threw 500 error: ${err.message}`);
     }
 });
 
@@ -171,7 +188,7 @@ app.get('/twitter/:user', async (req, res) => {
             });
         } else {
             res.json({code: 500, message: err.message});
-            console.log(`threw 500 error: ${err.message}`);
+            log('error', `Threw 500 error: ${err.message}`);
         }
     }
 });
@@ -239,7 +256,7 @@ app.get('/twitch/:user', async (req, res) => {
             });
         } else {
             res.json({code: 500, message: err.message});
-            console.log(`threw 500 error: ${err.message}`);
+            log('error', `Threw 500 error: ${err.message}`);
         }
     }
 });
@@ -318,7 +335,7 @@ app.get('/steam/:user', async (req, res) => {
         }
     } catch (err) {
         res.json({code: 500, message: err.message});
-        console.log(`threw 500 error: ${err.message}`);
+        log('error', `Threw 500 error: ${err.message}`);
     }
 });
 app.get('*', (_req, res) => {
@@ -326,5 +343,5 @@ app.get('*', (_req, res) => {
 });
 
 app.listen(3000, () => {
-    console.log('Server started at http://localhost:3000');
+    log('success', 'Server started on port 3000');
 });
