@@ -105,7 +105,3 @@ dist
 
 # MacOS customization files
 *.DS_Store
-
-# IDE customizations
-.idea/
-.vscode/
