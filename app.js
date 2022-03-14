@@ -5,7 +5,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const app = express();
 
 app.get('/', (_req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/page/index.html');
 });
 
 app.get('/roblox/:user', async (req, res) => {
@@ -46,42 +46,54 @@ app.get('/roblox/:user', async (req, res) => {
     }
 });
 
-app.get('/youtube/*', async (req, res) => {
-    const path = req.path.replace('/youtube', '').replace('/', '');
-    const link = await fetch(
-        `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${path}&key=${process.env.YOUTUBE_API_KEY}`
-    );
-    const reqs = await link.json();
-    if (reqs.pageInfo.totalResults == 0) {
+app.get('/youtube/:path', async (req, res) => {
+    try {
+        const {path} = req.params;
+        const link = await fetch(
+            `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${path}&key=${process.env.YOUTUBE_API_KEY}`
+        );
+        const reqs = await link.json();
+        if (reqs.pageInfo.totalResults == 0) {
+            res.json({
+                code: 404,
+                message: 'Channel not found, check if you provided channel ID, not name',
+            });
+            return;
+        }
         res.json({
-            code: 404,
-            message: 'Channel not found, check if you provided channel ID, not name',
+            code: 200,
+            subscribers: reqs.items[0].statistics.subscriberCount,
+            views: reqs.items[0].statistics.viewCount,
         });
-        return;
+    } catch (err) {
+        res.json({code: 500, message: err.message});
+        console.log(`threw 500 error: ${err.message}`);
     }
-    res.json({
-        subscribers: reqs.items[0].statistics.subscriberCount,
-        views: reqs.items[0].statistics.viewCount,
-    });
 });
 
-app.get('/discord/*', async (req, res) => {
-    const path = req.path.replace('/discord', '').replace('/', '');
-    const link = await fetch(`https://discordapp.com/api/v9/invites/${path}?with_counts=true`);
-    const reqs = await link.json();
-    if (reqs.code == 10006) {
-        res.json({
-            code: 404,
-            message: 'Guild not found, check if you provided Invite Code, not Guild ID',
-        });
-        return;
-    } else {
-        res.json({
-            name: reqs.guild.name,
-            members: reqs.approximate_member_count,
-            online: reqs.approximate_presence_count,
-            boosts: reqs.guild.premium_subscription_count,
-        });
+app.get('/discord/:path', async (req, res) => {
+    try {
+        const {path} = req.params;
+        const link = await fetch(`https://discordapp.com/api/v9/invites/${path}?with_counts=true`);
+        const reqs = await link.json();
+        if (reqs.code == 10006) {
+            res.json({
+                code: 404,
+                message: 'Guild not found, check if you provided Invite Code, not Guild ID',
+            });
+            return;
+        } else {
+            res.json({
+                code: 200,
+                name: reqs.guild.name,
+                members: reqs.approximate_member_count,
+                online: reqs.approximate_presence_count,
+                boosts: reqs.guild.premium_subscription_count,
+            });
+        }
+    } catch (err) {
+        res.json({code: 500, message: err.message});
+        console.log(`threw 500 error: ${err.message}`);
     }
 });
 
@@ -92,30 +104,37 @@ app.get('/twitter/:user', async (req, res) => {
             followers: Number,
             id: Number,
         };
-        const twitterAuth = {
-            Authorization: `Bearer ${process.env.TWITTER_TOKEN}`,
-        };
-        await fetch(`https://api.twitter.com/2/users/by/username/${data.username}`, {
-            headers: twitterAuth,
-        })
-            .then(res => res.json())
-            .then(json => {
-                console.log(json);
-                data.id = json.data.id;
+        if (isNaN(data.user)) {
+            const twitterAuth = {
+                Authorization: `Bearer ${process.env.TWITTER_TOKEN}`,
+            };
+            await fetch(`https://api.twitter.com/2/users/by/username/${data.username}`, {
+                headers: twitterAuth,
+            })
+                .then(res => res.json())
+                .then(json => {
+                    console.log(json);
+                    data.id = json.data.id;
+                });
+            await fetch(`https://api.twitter.com/2/users/${data.id}/followers`, {
+                headers: twitterAuth,
+            })
+                .then(res => res.json())
+                .then(json => {
+                    data.followers = console.log(json.data.length);
+                });
+            res.json({
+                code: 200,
+                followers: data.followers,
+                username: data.username,
+                id: data.id,
             });
-        await fetch(`https://api.twitter.com/2/users/${data.id}/followers`, {
-            headers: twitterAuth,
-        })
-            .then(res => res.json())
-            .then(json => {
-                data.followers = console.log(json.data.length);
+        } else {
+            res.json({
+                code: 400,
+                message: 'Please enter a username, not a user ID',
             });
-        res.json({
-            code: 200,
-            followers: data.followers,
-            username: data.username,
-            id: data.id,
-        });
+        }
     } catch (err) {
         res.json({code: 500, message: err.message});
         console.log(`threw 500 error: ${err.message}`);
@@ -180,7 +199,7 @@ app.get('/twitch/:user', async (req, res) => {
     }
 });
 app.get('*', (_req, res) => {
-    res.json({code: 404, message: 'Invalid Directory'});
+    res.json({code: 404, message: 'Non-Existent Endpoint'});
 });
 
 app.listen(3000, () => {
