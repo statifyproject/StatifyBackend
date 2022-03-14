@@ -103,6 +103,8 @@ app.get('/twitter/:user', async (req, res) => {
             username: req.params.user,
             followers: Number,
             id: Number,
+            following: Number,
+            tweets: Number,
         };
         if (isNaN(data.user)) {
             const twitterAuth = {
@@ -113,21 +115,24 @@ app.get('/twitter/:user', async (req, res) => {
             })
                 .then(res => res.json())
                 .then(json => {
-                    console.log(json);
                     data.id = json.data.id;
                 });
-            await fetch(`https://api.twitter.com/2/users/${data.id}/followers`, {
+            await fetch(`https://api.twitter.com/2/users/${data.id}?user.fields=public_metrics`, {
                 headers: twitterAuth,
             })
                 .then(res => res.json())
                 .then(json => {
-                    data.followers = console.log(json.data.length);
+                    data.followers = json.data.public_metrics.followers_count;
+                    data.following = json.data.public_metrics.following_count;
+                    data.tweets = json.data.public_metrics.tweet_count;
                 });
             res.json({
                 code: 200,
                 followers: data.followers,
                 username: data.username,
                 id: data.id,
+                following: data.following,
+                tweets: data.tweets,
             });
         } else {
             res.json({
