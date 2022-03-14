@@ -30,7 +30,7 @@ app.get('/roblox/:user', async (req, res) => {
         username: req.params.user,
         online: Boolean,
         followers: Number,
-        userID: Number,
+        id: Number,
         friends: Number,
         success: Boolean,
         error: String,
@@ -50,10 +50,10 @@ app.get('/roblox/:user', async (req, res) => {
             if (data.success == false) {
                 throw new Error(`Roblox API Error: ${data.error}`);
             }
-            await fetch(`https://friends.roblox.com/v1/users/${data.userID}/followers/count`)
+            await fetch(`https://friends.roblox.com/v1/users/${data.id}/followers/count`)
                 .then(res => res.json())
                 .then(json => (data.followers = json.count));
-            await fetch(`https://friends.roblox.com/v1/users/${data.userID}/friends/count`)
+            await fetch(`https://friends.roblox.com/v1/users/${data.id}/friends/count`)
                 .then(res => res.json())
                 .then(json => (data.friends = json.count));
             res.json({
@@ -63,6 +63,7 @@ app.get('/roblox/:user', async (req, res) => {
                 online: data.online,
                 userID: data.userID,
                 friends: data.friends,
+                avatar: `https://www.roblox.com/headshot-thumbnail/image?userId=${data.id}&width=420&height=420&format=png`,
             });
         } else {
             res.json({code: 400, message: 'Please enter a username, not a user ID'});
