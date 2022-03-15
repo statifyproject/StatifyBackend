@@ -360,6 +360,6 @@ app.get('*', (_req, res) => {
     res.json({code: 404, message: 'Non-Existent Endpoint'});
 });
 
-app.listen(3000, () => {
-    log('success', 'Server started on port 3000');
+app.listen(1337, () => {
+    log('success', 'Server started on port 1337');
 });
