@@ -5,10 +5,6 @@ const color = require('colors');
 
 const app = express();
 
-app.get('/', (_req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
-
 function log(type, query) {
     if (type === 'error') {
         console.log(color.red(`✖ ${query}`));
@@ -25,18 +21,26 @@ function log(type, query) {
     }
 }
 
-app.get('/roblox/:user', async (req, res) => {
-    let data = {
-        username: req.params.user,
-    };
+app.get('/', (_req, res) => {
     try {
+        res.sendFile(__dirname + '/index.html');
+    } catch (e) {
+        log('error', e);
+    }
+});
+
+app.get('/roblox/:user', async (req, res) => {
+    try {
+        let data = {
+            username: req.params.user,
+        };
         if (isNaN(req.params.user)) {
             await fetch(`https://api.roblox.com/users/get-by-username?username=${data.username}`)
                 .then(res => res.json())
                 .then(
                     json => (
                         (data.online = json.IsOnline),
-                        (data.userID = json.Id),
+                        (data.id = json.Id),
                         (data.success = json?.success),
                         (data.error = json?.errorMessage)
                     )
@@ -85,7 +89,10 @@ app.get('/youtube/:channel', async (req, res) => {
             `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${data.path}&key=${process.env.YOUTUBE_API_KEY}&maxResults=1&type=channel`
         )
             .then(res => res.json())
-            .then(json => (data.id = json.items[0].id.channelId));
+            .then(json => {
+                data.id = json.items[0].id.channelId;
+                data.avatar = json.items[0].snippet.thumbnails.default.url;
+            });
         await fetch(
             `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${data.id}&key=${process.env.YOUTUBE_API_KEY}`
         )
@@ -94,8 +101,14 @@ app.get('/youtube/:channel', async (req, res) => {
                 data.subscribers = json.items[0].statistics.subscriberCount;
                 data.views = json.items[0].statistics.viewCount;
                 data.videos = json.items[0].statistics.videoCount;
-                //TODO: #13 add avatar
             });
+        res.json({
+            code: 200,
+            subscribers: data.subscribers,
+            views: data.views,
+            videos: data.videos,
+            avatar: data.avatar,
+        });
     } catch (err) {
         res.json({code: 500, message: err.message});
         log('error', `Threw 500 error: ${err.message}`);
@@ -133,13 +146,6 @@ app.get('/twitter/:user', async (req, res) => {
     try {
         let data = {
             username: req.params.user,
-            followers: Number,
-            id: Number,
-            following: Number,
-            tweets: Number,
-            error: String,
-            verified: Boolean,
-            avatar: String,
         };
         if (isNaN(data.user)) {
             const twitterAuth = {
@@ -206,11 +212,6 @@ app.get('/twitch/:user', async (req, res) => {
         let twitchOauth = String,
             data = {
                 username: req.params.user,
-                followers: Number,
-                id: Number,
-                views: Number,
-                avatar: String,
-                //subs: Number,
             };
 
         if (isNaN(data.username)) {
@@ -279,15 +280,6 @@ app.get('/steam/:user', async (req, res) => {
     try {
         let data = {
             username: req.params.user,
-            displayName: String,
-            id64: Number,
-            error: Number,
-            realName: String,
-            countryCode: String,
-            stateCode: String,
-            onlineState: String,
-            rawOnlineState: Number,
-            avatar: String,
         };
         if (isNaN(data.username)) {
             await fetch(
@@ -357,7 +349,12 @@ app.get('/steam/:user', async (req, res) => {
     }
 });
 app.get('*', (_req, res) => {
-    res.json({code: 404, message: 'Non-Existent Endpoint'});
+    try {
+        res.json({code: 404, message: 'Non-Existent Endpoint'});
+    } catch (err) {
+        res.json({code: 500, message: err.message});
+        log('error', `Threw 500 error: ${err.message}`);
+    }
 });
 
 app.listen(1337, () => {
