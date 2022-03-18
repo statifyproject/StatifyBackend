@@ -1,7 +1,9 @@
-require('dotenv').config();
-const express = require('express');
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-const color = require('colors');
+import dotenv from 'dotenv';
+import express from 'express';
+import {fetch} from 'undici';
+import color from 'colors';
+
+dotenv.config();
 
 const app = express();
 
@@ -20,7 +22,6 @@ function log(type, query) {
         console.log(color.gray(query));
     }
 }
-
 app.get('/', (_req, res) => {
     try {
         res.sendFile(__dirname + '/index.html');
