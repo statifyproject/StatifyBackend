@@ -1,3 +1,4 @@
+'use strict';
 import {fetch} from 'undici';
 export async function roblox(fastify) {
     fastify.get('/roblox/:user', async req => {

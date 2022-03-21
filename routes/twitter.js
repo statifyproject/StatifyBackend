@@ -1,3 +1,4 @@
+'use strict';
 import {fetch} from 'undici';
 export async function twitter(fastify) {
     fastify.get('/twitter/:user', async req => {

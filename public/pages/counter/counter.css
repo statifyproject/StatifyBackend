@@ -1,6 +1,6 @@
-/**
- * Copyright (c) 2022 Aiden Baker
- *
- * This software is released under the MIT License.
- * https://opensource.org/licenses/MIT
- */
+html {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+}

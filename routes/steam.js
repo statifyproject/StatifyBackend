@@ -1,3 +1,4 @@
+'use strict';
 import {fetch} from 'undici';
 export async function steam(fastify) {
     fastify.get('/steam/:user', async req => {

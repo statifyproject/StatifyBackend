@@ -1,3 +1,4 @@
+'use strict';
 import {fetch} from 'undici';
 export async function youtube(fastify) {
     fastify.get('/youtube/:channel', async req => {

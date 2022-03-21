@@ -1,3 +1,4 @@
+'use strict';
 import {fetch} from 'undici';
 export async function twitch(fastify) {
     fastify.get('/twitch/:user', async req => {

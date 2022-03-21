@@ -1,8 +1,10 @@
+'use strict';
 import Fastify from 'fastify';
 const fastify = Fastify();
 import {resolve, join} from 'path';
 import fastifyStatic from 'fastify-static';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 fastify.register(fastifyStatic, {
@@ -52,15 +54,16 @@ try {
 }
 
 fastify.get('/', async (_req, reply) => {
-    return reply
-        .sendFile('/pages/index.html')
-        .sendFile('/pages/images/logo.webp')
-        .sendFile('/pages/images/favicon.ico');
+    return reply.sendFile('/pages/index.html');
+});
+
+fastify.get('/counter*', async (_req, reply) => {
+    return reply.sendFile('/pages/counter/counter.html');
 });
 
 const start = async () => {
     try {
-        await fastify.listen(3000, '127.0.0.1');
+        await fastify.listen(3000, '127.0.0.1'); // 127.0.0.1 must be specified or things will break
     } catch (err) {
         fastify.log.error(err);
         process.exit(1);
