@@ -3,7 +3,7 @@ import {fetch} from 'undici';
 export async function twitter(fastify) {
     fastify.get('/twitter/:user', async req => {
         try {
-            let data = {
+            const data = {
                 username: req.params.user,
             };
             if (isNaN(data.user)) {
@@ -39,13 +39,7 @@ export async function twitter(fastify) {
                     });
                 return {
                     code: 200,
-                    followers: data.followers,
-                    username: data.username,
-                    id: data.id,
-                    following: data.following,
-                    tweets: data.tweets,
-                    verified: data.verified,
-                    avatar: data.avatar,
+                    data,
                 };
             } else {
                 return {

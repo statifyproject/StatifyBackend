@@ -3,7 +3,7 @@ import {fetch} from 'undici';
 export async function steam(fastify) {
     fastify.get('/steam/:user', async req => {
         try {
-            let data = {
+            const data = {
                 username: req.params.user,
             };
             if (isNaN(data.username)) {
@@ -52,14 +52,12 @@ export async function steam(fastify) {
                         data.onlineState = 'Looking to play';
                         break;
                 }
+                if (data.error == 1) {
+                    delete data.error;
+                }
                 return {
                     code: 200,
-                    displayName: data.displayName,
-                    realName: data.realName,
-                    countryCode: data.countryCode,
-                    stateCode: data.stateCode,
-                    onlineState: data.onlineState,
-                    avatar: data.avatar,
+                    data,
                 };
             } else {
                 return {

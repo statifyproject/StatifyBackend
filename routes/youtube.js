@@ -3,7 +3,7 @@ import {fetch} from 'undici';
 export async function youtube(fastify) {
     fastify.get('/youtube/:channel', async req => {
         try {
-            let data = {
+            const data = {
                 channel: req.params.channel,
             };
             await fetch(
@@ -25,10 +25,7 @@ export async function youtube(fastify) {
                 });
             return {
                 code: 200,
-                subscribers: data.subscribers,
-                views: data.views,
-                videos: data.videos,
-                avatar: data.avatar,
+                data,
             };
         } catch (err) {
             console.log('error', `Threw 500 error in YouTube module: ${err.message}`);

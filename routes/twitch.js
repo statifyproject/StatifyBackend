@@ -3,10 +3,10 @@ import {fetch} from 'undici';
 export async function twitch(fastify) {
     fastify.get('/twitch/:user', async req => {
         try {
-            let twitchOauth = String,
-                data = {
-                    username: req.params.user,
-                };
+            let twitchOauth = String;
+            const data = {
+                username: req.params.user,
+            };
 
             if (isNaN(data.username)) {
                 await fetch(
@@ -40,10 +40,7 @@ export async function twitch(fastify) {
                     .then(json => (data.followers = json.total));
                 return {
                     code: 200,
-                    followers: data.followers,
-                    id: data.id,
-                    views: data.views,
-                    avatar: data.avatar,
+                    data,
                 };
             } else {
                 return {

@@ -3,7 +3,7 @@ import {fetch} from 'undici';
 export async function roblox(fastify) {
     fastify.get('/roblox/:user', async req => {
         try {
-            let data = {
+            const data = {
                 username: req.params.user,
             };
             if (isNaN(req.params.user)) {
@@ -26,14 +26,10 @@ export async function roblox(fastify) {
                 await fetch(`https://friends.roblox.com/v1/users/${data.id}/friends/count`)
                     .then(res => res.json())
                     .then(json => (data.friends = json.count));
+                data.avatar = `https://www.roblox.com/headshot-thumbnail/image?userId=${data.id}&width=420&height=420&format=png`;
                 return {
                     code: 200,
-                    followers: data.followers,
-                    username: data.username,
-                    online: data.online,
-                    id: data.id,
-                    friends: data.friends,
-                    avatar: `https://www.roblox.com/headshot-thumbnail/image?userId=${data.id}&width=420&height=420&format=png`,
+                    data,
                 };
             } else {
                 return {code: 400, message: 'Please enter a username, not a user ID'};

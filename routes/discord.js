@@ -3,7 +3,7 @@ import {fetch} from 'undici';
 export async function discord(fastify) {
     fastify.get('/discord/:invite', async req => {
         try {
-            let data = {
+            const data = {
                 invite: req.params.invite,
             };
             await fetch(`https://discordapp.com/api/v9/invites/${data.invite}?with_counts=true`)

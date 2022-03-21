@@ -61,12 +61,12 @@ fastify.get('/counter*', async (_req, reply) => {
     return reply.sendFile('/pages/counter/counter.html');
 });
 
-const start = async () => {
+async function start() {
     try {
         await fastify.listen(3000, '127.0.0.1'); // 127.0.0.1 must be specified or things will break
     } catch (err) {
         fastify.log.error(err);
         process.exit(1);
     }
-};
+}
 start();
