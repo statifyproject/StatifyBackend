@@ -1,78 +1,69 @@
+import Fastify from 'fastify';
+const fastify = Fastify();
+import {resolve, join} from 'path';
+import fastifyStatic from 'fastify-static';
 import dotenv from 'dotenv';
-import express from 'express';
-
-const __dirname = process.cwd(); //Why the fuck is this necessary?
 dotenv.config();
-const app = express();
 
-async function apis() {
-    try {
-        const {youtube} = await import('./apis/youtube.js');
-        youtube(app);
-    } catch (err) {
-        console.log(`failed to load youtube api module: ${err}`);
-    }
+fastify.register(fastifyStatic, {
+    root: join(resolve('.'), 'public'),
+});
 
-    try {
-        const {reddit} = await import('./apis/reddit.js');
-        reddit(app);
-    } catch (err) {
-        console.log(`failed to load reddit api module: ${err}`);
-    }
-
-    try {
-        const {twitter} = await import('./apis/twitter.js');
-        twitter(app);
-    } catch (err) {
-        console.log(`failed to load twitter api module: ${err}`);
-    }
-
-    try {
-        const {twitch} = await import('./apis/twitch.js');
-        twitch(app);
-    } catch (err) {
-        console.log(`failed to load twitch api module: ${err}`);
-    }
-
-    try {
-        const {discord} = await import('./apis/discord.js');
-        discord(app);
-    } catch (err) {
-        console.log(`failed to load discord api module: ${err}`);
-    }
-
-    try {
-        const {roblox} = await import('./apis/roblox.js');
-        roblox(app);
-    } catch (err) {
-        console.log(`failed to load roblox api module: ${err}`);
-    }
-
-    try {
-        const {steam} = await import('./apis/steam.js');
-        steam(app);
-    } catch (err) {
-        console.log(`failed to load steam api module: ${err}`);
-    }
-
-    console.log(`finished loading all API files, starting server at http://localhost:1337`);
+try {
+    const {discord} = await import('./routes/discord.js');
+    discord(fastify);
+} catch (err) {
+    console.log('Failed to load Discord route:', err.message);
 }
 
-app.get('/', (_req, res) => {
-    try {
-        res.sendFile(__dirname + '/index.html'); // __dirname doesn't fucking work wot
-    } catch (e) {
-        console.log('error', e);
-    }
+try {
+    const {roblox} = await import('./routes/roblox.js');
+    roblox(fastify);
+} catch (err) {
+    console.log('Failed to load Roblox route:', err.message);
+}
+
+try {
+    const {steam} = await import('./routes/steam.js');
+    steam(fastify);
+} catch (err) {
+    console.log('Failed to load Steam route:', err.message);
+}
+
+try {
+    const {twitch} = await import('./routes/twitch.js');
+    twitch(fastify);
+} catch (err) {
+    console.log('Failed to load Twitch route:', err.message);
+}
+
+try {
+    const {twitter} = await import('./routes/twitter.js');
+    twitter(fastify);
+} catch (err) {
+    console.log('Failed to load Twitter route:', err.message);
+}
+
+try {
+    const {youtube} = await import('./routes/youtube.js');
+    youtube(fastify);
+} catch (err) {
+    console.log('Failed to load YouTube route:', err.message);
+}
+
+fastify.get('/', async (_req, reply) => {
+    return reply
+        .sendFile('/pages/index.html')
+        .sendFile('/pages/images/logo.webp')
+        .sendFile('/pages/images/favicon.ico');
 });
 
-app.get('*', (_req, res) => {
+const start = async () => {
     try {
-        res.json({code: 404, message: 'Non-Existent Endpoint'});
+        await fastify.listen(3000, '127.0.0.1');
     } catch (err) {
-        res.json({code: 500, message: err.message});
-        log('error', `Threw 500 error: ${err.message}`);
+        fastify.log.error(err);
+        process.exit(1);
     }
-});
-
-app.listen(1337, apis());
+};
+start();

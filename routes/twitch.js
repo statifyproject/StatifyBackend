@@ -1,6 +1,6 @@
 import {fetch} from 'undici';
-export async function twitch(app) {
-    app.get('/twitch/:user', async (req, res) => {
+export async function twitch(fastify) {
+    fastify.get('/twitch/:user', async req => {
         try {
             let twitchOauth = String,
                 data = {
@@ -37,28 +37,28 @@ export async function twitch(app) {
                 })
                     .then(res => res.json())
                     .then(json => (data.followers = json.total));
-                res.json({
+                return {
                     code: 200,
                     followers: data.followers,
                     id: data.id,
                     views: data.views,
                     avatar: data.avatar,
-                });
+                };
             } else {
-                res.json({
+                return {
                     code: 400,
                     message: 'Please enter a username, not a user ID',
-                });
+                };
             }
         } catch (err) {
             if (err.message == 'Twitch API Error: User not found') {
-                res.json({
+                return {
                     code: 404,
                     message: 'User not found',
-                });
+                };
             } else {
-                res.json({code: 500, message: err.message});
-                console.log('error', `Threw 500 error: ${err.message}`);
+                console.log(`Threw 500 error in Twitch module: ${err}`);
+                return {code: 500, message: err};
             }
         }
     });

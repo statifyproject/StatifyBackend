@@ -1,6 +1,6 @@
 import {fetch} from 'undici';
-export async function twitter(app) {
-    app.get('/twitter/:user', async (req, res) => {
+export async function twitter(fastify) {
+    fastify.get('/twitter/:user', async req => {
         try {
             let data = {
                 username: req.params.user,
@@ -36,7 +36,7 @@ export async function twitter(app) {
                         data.verified = json.data.verified;
                         data.avatar = json.data.profile_image_url;
                     });
-                res.json({
+                return {
                     code: 200,
                     followers: data.followers,
                     username: data.username,
@@ -45,22 +45,22 @@ export async function twitter(app) {
                     tweets: data.tweets,
                     verified: data.verified,
                     avatar: data.avatar,
-                });
+                };
             } else {
-                res.json({
+                return {
                     code: 400,
                     message: 'Please enter a username, not a user ID',
-                });
+                };
             }
         } catch (err) {
             if (err.message == 'Twitter API Error: User not found') {
-                res.json({
+                return {
                     code: 404,
                     message: 'User not found',
-                });
+                };
             } else {
-                res.json({code: 500, message: err.message});
-                console.log('error', `Threw 500 error: ${err.message}`);
+                console.log('error', `Threw 500 error in Twitter module: ${err.message}`);
+                return {code: 500, message: err.message};
             }
         }
     });

@@ -1,7 +1,6 @@
 import {fetch} from 'undici';
-export async function youtube(app) {
-    app.get('/youtube/:channel', async (req, res) => {
-        console.log(req);
+export async function youtube(fastify) {
+    fastify.get('/youtube/:channel', async req => {
         try {
             let data = {
                 channel: req.params.channel,
@@ -23,17 +22,16 @@ export async function youtube(app) {
                     data.views = json.items[0].statistics.viewCount;
                     data.videos = json.items[0].statistics.videoCount;
                 });
-            res.json({
+            return {
                 code: 200,
                 subscribers: data.subscribers,
                 views: data.views,
                 videos: data.videos,
                 avatar: data.avatar,
-            });
-            console.log(data);
+            };
         } catch (err) {
-            res.json({code: 500, message: err.message});
-            console.log('error', `Threw 500 error: ${err.message}`);
+            console.log('error', `Threw 500 error in YouTube module: ${err.message}`);
+            return {code: 500, message: err.message};
         }
     });
 }

@@ -1,6 +1,6 @@
 import {fetch} from 'undici';
-export async function steam(app) {
-    app.get('/steam/:user', async (req, res) => {
+export async function steam(fastify) {
+    fastify.get('/steam/:user', async req => {
         try {
             let data = {
                 username: req.params.user,
@@ -51,7 +51,7 @@ export async function steam(app) {
                         data.onlineState = 'Looking to play';
                         break;
                 }
-                res.json({
+                return {
                     code: 200,
                     displayName: data.displayName,
                     realName: data.realName,
@@ -59,17 +59,17 @@ export async function steam(app) {
                     stateCode: data.stateCode,
                     onlineState: data.onlineState,
                     avatar: data.avatar,
-                });
+                };
             } else {
-                res.json({
+                return {
                     code: 400,
                     message:
                         "Please enter a user URL. this should be the user's Steam Community URL Ending. (ex: https://steamcommunity.com/id/<Give us this>)",
-                });
+                };
             }
         } catch (err) {
-            res.json({code: 500, message: err.message});
-            console.log('error', `Threw 500 error: ${err.message}`);
+            console.log('error', `Threw 500 error in Steam module: ${err.message}`);
+            return {code: 500, message: err.message};
         }
     });
 }

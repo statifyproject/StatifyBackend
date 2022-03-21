@@ -1,6 +1,6 @@
 import {fetch} from 'undici';
-export async function roblox(app) {
-    app.get('/roblox/:user', async (req, res) => {
+export async function roblox(fastify) {
+    fastify.get('/roblox/:user', async req => {
         try {
             let data = {
                 username: req.params.user,
@@ -25,7 +25,7 @@ export async function roblox(app) {
                 await fetch(`https://friends.roblox.com/v1/users/${data.id}/friends/count`)
                     .then(res => res.json())
                     .then(json => (data.friends = json.count));
-                res.json({
+                return {
                     code: 200,
                     followers: data.followers,
                     username: data.username,
@@ -33,19 +33,19 @@ export async function roblox(app) {
                     id: data.id,
                     friends: data.friends,
                     avatar: `https://www.roblox.com/headshot-thumbnail/image?userId=${data.id}&width=420&height=420&format=png`,
-                });
+                };
             } else {
-                res.json({code: 400, message: 'Please enter a username, not a user ID'});
+                return {code: 400, message: 'Please enter a username, not a user ID'};
             }
         } catch (err) {
             if (err.message == 'Roblox API Error: User not found') {
-                res.json({
+                return {
                     code: 404,
                     message: 'User not found',
-                });
+                };
             } else {
-                res.json({code: 500, message: err.message});
-                console.log('error', `Threw 500 error: ${err.message}`);
+                console.log('error', `Threw 500 error in Roblox module: ${err.message}`);
+                return {code: 500, message: err.message};
             }
         }
     });
