@@ -4,11 +4,15 @@ const fastify = Fastify();
 import {resolve, join} from 'path';
 import fastifyStatic from 'fastify-static';
 import dotenv from 'dotenv';
+import fastifyFavicon from 'fastify-favicon';
 
 dotenv.config();
 
 fastify.register(fastifyStatic, {
     root: join(resolve('.'), 'public'),
+});
+fastify.register(fastifyFavicon, {
+    path: join(resolve('.'), 'public/images', '/favicon.ico'),
 });
 
 try {

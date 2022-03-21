@@ -12,8 +12,8 @@ export async function discord(fastify) {
                     data.name = json.guild.name;
                     data.id = json.guild.id;
                     data.splash = `https://cdn.discordapp.com/splashes/${data.id}/${json.guild.splash}.jpg`;
-                    data.icon = `https://cdn.discordapp.com/icons/${data.id}/${json.guild.icon}`;
-                    data.banner = `https://cdn.discordapp.com/banners/${data.id}/${json.guild.banner}`;
+                    data.icon = json.guild.icon;
+                    data.banner = json.guild.banner;
                     data.description = json.guild.description;
                     data.vanity = json.guild.vanity_url;
                     data.boosts = json.guild.premium_subscription_count;
@@ -31,6 +31,8 @@ export async function discord(fastify) {
             } else {
                 data.banner += '.png';
             }
+            data.banner = `https://cdn.discordapp.com/banners/${data.id}/${data.banner}`;
+            data.icon = `https://cdn.discordapp.com/icons/${data.id}/${data.icon}`;
             return {
                 code: 200,
                 data,
