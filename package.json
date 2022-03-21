@@ -3,7 +3,7 @@
     "dependencies": {
         "dotenv": "^16.0.0",
         "express": "^4.17.3",
-        "undici": "^4.15.1"
+        "undici": "^4.16.0"
     },
     "scripts": {
         "start": "node app.js"
