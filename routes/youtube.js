@@ -6,7 +6,7 @@ export async function youtube(fastify) {
                 channel: req.params.channel,
             };
             await fetch(
-                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${data.path}&key=${process.env.YOUTUBE_API_KEY}&maxResults=1&type=channel`
+                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${data.channel}&key=${process.env.YOUTUBE_API_KEY}&maxResults=1&type=channel`
             )
                 .then(res => res.json())
                 .then(json => {
