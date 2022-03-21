@@ -1,6 +1,7 @@
 import {fetch} from 'undici';
-export const youtube = app => {
+export async function youtube(app) {
     app.get('/youtube/:channel', async (req, res) => {
+        console.log(req);
         try {
             let data = {
                 channel: req.params.channel,
@@ -29,9 +30,10 @@ export const youtube = app => {
                 videos: data.videos,
                 avatar: data.avatar,
             });
+            console.log(data);
         } catch (err) {
             res.json({code: 500, message: err.message});
             console.log('error', `Threw 500 error: ${err.message}`);
         }
     });
-};
+}

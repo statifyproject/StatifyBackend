@@ -1,29 +1,66 @@
 import dotenv from 'dotenv';
 import express from 'express';
 
-import {youtube} from './apis/youtube.js';
-import {twitter} from './apis/twitter.js';
-import {twitch} from './apis/twitch.js';
-import {discord} from './apis/discord.js';
-//import {reddit} from './apis/reddit.js';
-import {roblox} from './apis/roblox.js';
-import {steam} from './apis/steam.js';
-
+const __dirname = process.cwd(); //Why the fuck is this necessary?
 dotenv.config();
-
 const app = express();
 
-youtube(app);
-twitter(app);
-twitch(app);
-discord(app);
-//reddit(app);
-roblox(app);
-steam(app);
+async function apis() {
+    try {
+        const {youtube} = await import('./apis/youtube.js');
+        youtube(app);
+    } catch (err) {
+        console.log(`failed to load youtube api module: ${err}`);
+    }
+
+    try {
+        const {reddit} = await import('./apis/reddit.js');
+        reddit(app);
+    } catch (err) {
+        console.log(`failed to load reddit api module: ${err}`);
+    }
+
+    try {
+        const {twitter} = await import('./apis/twitter.js');
+        twitter(app);
+    } catch (err) {
+        console.log(`failed to load twitter api module: ${err}`);
+    }
+
+    try {
+        const {twitch} = await import('./apis/twitch.js');
+        twitch(app);
+    } catch (err) {
+        console.log(`failed to load twitch api module: ${err}`);
+    }
+
+    try {
+        const {discord} = await import('./apis/discord.js');
+        discord(app);
+    } catch (err) {
+        console.log(`failed to load discord api module: ${err}`);
+    }
+
+    try {
+        const {roblox} = await import('./apis/roblox.js');
+        roblox(app);
+    } catch (err) {
+        console.log(`failed to load roblox api module: ${err}`);
+    }
+
+    try {
+        const {steam} = await import('./apis/steam.js');
+        steam(app);
+    } catch (err) {
+        console.log(`failed to load steam api module: ${err}`);
+    }
+
+    console.log(`finished loading all API files, starting server at http://localhost:1337`);
+}
 
 app.get('/', (_req, res) => {
     try {
-        res.sendFile(process.cwd() + '/index.html'); // __dirname doesn't fucking work wot
+        res.sendFile(__dirname + '/index.html'); // __dirname doesn't fucking work wot
     } catch (e) {
         console.log('error', e);
     }
@@ -38,6 +75,4 @@ app.get('*', (_req, res) => {
     }
 });
 
-app.listen(1337, () => {
-    console.log('Server started on port 1337');
-});
+app.listen(1337, apis());

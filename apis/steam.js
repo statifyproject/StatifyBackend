@@ -1,5 +1,5 @@
 import {fetch} from 'undici';
-export const steam = async app => {
+export async function steam(app) {
     app.get('/steam/:user', async (req, res) => {
         try {
             let data = {
@@ -72,4 +72,4 @@ export const steam = async app => {
             console.log('error', `Threw 500 error: ${err.message}`);
         }
     });
-};
+}

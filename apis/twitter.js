@@ -1,5 +1,5 @@
 import {fetch} from 'undici';
-export const twitter = async app => {
+export async function twitter(app) {
     app.get('/twitter/:user', async (req, res) => {
         try {
             let data = {
@@ -64,4 +64,4 @@ export const twitter = async app => {
             }
         }
     });
-};
+}

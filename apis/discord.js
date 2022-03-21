@@ -1,5 +1,5 @@
 import {fetch} from 'undici';
-export const discord = async app => {
+export async function discord(app) {
     app.get('/discord/:path', async (req, res) => {
         try {
             const {path} = req.params;
@@ -25,4 +25,4 @@ export const discord = async app => {
             console.log('error', `Threw 500 error: ${err.message}`);
         }
     });
-};
+}

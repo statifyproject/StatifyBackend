@@ -1,5 +1,5 @@
 import {fetch} from 'undici';
-export const twitch = async app => {
+export async function twitch(app) {
     app.get('/twitch/:user', async (req, res) => {
         try {
             let twitchOauth = String,
@@ -62,4 +62,4 @@ export const twitch = async app => {
             }
         }
     });
-};
+}

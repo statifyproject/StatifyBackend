@@ -1,5 +1,5 @@
 import {fetch} from 'undici';
-export const roblox = async app => {
+export async function roblox(app) {
     app.get('/roblox/:user', async (req, res) => {
         try {
             let data = {
@@ -49,4 +49,4 @@ export const roblox = async app => {
             }
         }
     });
-};
+}
