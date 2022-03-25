@@ -1,6 +1,6 @@
 'use strict';
 import {fetch} from 'undici';
-export async function discord(fastify) {
+export async function endpoint(fastify) {
     fastify.get('/discord/:invite', async req => {
         try {
             const data = {
@@ -44,7 +44,7 @@ export async function discord(fastify) {
                     message: 'Discord Api Error: Invalid invite',
                 };
             } else {
-                console.log(`Threw 500 error in Discord module: ${err.message}`);
+                console.error(`Threw 500 error in Discord module: ${err.message}`);
                 return {code: 500, message: err.message};
             }
         }

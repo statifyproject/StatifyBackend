@@ -1,6 +1,6 @@
 'use strict';
 import {fetch} from 'undici';
-export async function steam(fastify) {
+export async function endpoint(fastify) {
     fastify.get('/steam/:user', async req => {
         try {
             const data = {
@@ -67,7 +67,7 @@ export async function steam(fastify) {
                 };
             }
         } catch (err) {
-            console.log('error', `Threw 500 error in Steam module: ${err.message}`);
+            console.error(`Threw 500 error in Steam module: ${err.message}`);
             return {code: 500, message: err.message};
         }
     });

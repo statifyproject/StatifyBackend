@@ -1,6 +1,6 @@
 'use strict';
 import {fetch} from 'undici';
-export async function roblox(fastify) {
+export async function endpoint(fastify) {
     fastify.get('/roblox/:user', async req => {
         try {
             const data = {
@@ -41,7 +41,7 @@ export async function roblox(fastify) {
                     message: 'User not found',
                 };
             } else {
-                console.log('error', `Threw 500 error in Roblox module: ${err.message}`);
+                console.error(`Threw 500 error in Roblox module: ${err.message}`);
                 return {code: 500, message: err.message};
             }
         }

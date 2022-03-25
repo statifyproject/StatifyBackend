@@ -1,2 +1,3 @@
-# api
-Wrapper API for checking Social Media statistics
+# StatifyBackend
+
+This is the repository for the Statify Backend. The production version can be accessed via https://api.statify.live.

@@ -1,6 +1,6 @@
 'use strict';
 import {fetch} from 'undici';
-export async function twitch(fastify) {
+export async function endpoint(fastify) {
     fastify.get('/twitch/:user', async req => {
         try {
             let twitchOauth = String;
@@ -55,7 +55,7 @@ export async function twitch(fastify) {
                     message: 'User not found',
                 };
             } else {
-                console.log(`Threw 500 error in Twitch module: ${err}`);
+                console.error(`Threw 500 error in Twitch module: ${err}`);
                 return {code: 500, message: err};
             }
         }

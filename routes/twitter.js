@@ -1,6 +1,6 @@
 'use strict';
 import {fetch} from 'undici';
-export async function twitter(fastify) {
+export async function endpoint(fastify) {
     fastify.get('/twitter/:user', async req => {
         try {
             const data = {
@@ -54,7 +54,7 @@ export async function twitter(fastify) {
                     message: 'User not found',
                 };
             } else {
-                console.log('error', `Threw 500 error in Twitter module: ${err.message}`);
+                console.error(`Threw 500 error in Twitter module: ${err.message}`);
                 return {code: 500, message: err.message};
             }
         }

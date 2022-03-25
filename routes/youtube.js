@@ -1,6 +1,6 @@
 'use strict';
 import {fetch} from 'undici';
-export async function youtube(fastify) {
+export async function endpoint(fastify) {
     fastify.get('/youtube/:channel', async req => {
         try {
             const data = {
@@ -28,7 +28,7 @@ export async function youtube(fastify) {
                 data,
             };
         } catch (err) {
-            console.log('error', `Threw 500 error in YouTube module: ${err.message}`);
+            console.error(`Threw 500 error in YouTube module: ${err.message}`);
             return {code: 500, message: err.message};
         }
     });

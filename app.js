@@ -12,50 +12,25 @@ fastify.register(fastifyStatic, {
     root: join(resolve('.'), 'public'),
 });
 fastify.register(fastifyFavicon, {
-    path: join(resolve('.'), 'public/images', '/favicon.ico'),
+    path: join(resolve('.'), 'public', '/images/favicon.ico'),
 });
 
-try {
-    const {discord} = await import('./routes/discord.js');
-    discord(fastify);
-} catch (err) {
-    console.log('Failed to load Discord route:', err.message);
+async function tryLoad(name) {
+    try {
+        const {endpoint} = await import(`./routes/${name}.js`);
+        endpoint(fastify);
+        console.info(`Loaded ${name}`);
+    } catch (err) {
+        console.error(`Failed to load ${name}: ${err.message}`);
+    }
 }
 
-try {
-    const {roblox} = await import('./routes/roblox.js');
-    roblox(fastify);
-} catch (err) {
-    console.log('Failed to load Roblox route:', err.message);
-}
-
-try {
-    const {steam} = await import('./routes/steam.js');
-    steam(fastify);
-} catch (err) {
-    console.log('Failed to load Steam route:', err.message);
-}
-
-try {
-    const {twitch} = await import('./routes/twitch.js');
-    twitch(fastify);
-} catch (err) {
-    console.log('Failed to load Twitch route:', err.message);
-}
-
-try {
-    const {twitter} = await import('./routes/twitter.js');
-    twitter(fastify);
-} catch (err) {
-    console.log('Failed to load Twitter route:', err.message);
-}
-
-try {
-    const {youtube} = await import('./routes/youtube.js');
-    youtube(fastify);
-} catch (err) {
-    console.log('Failed to load YouTube route:', err.message);
-}
+await tryLoad('discord');
+await tryLoad('roblox');
+await tryLoad('steam');
+await tryLoad('twitch');
+await tryLoad('twitter');
+await tryLoad('youtube');
 
 fastify.get('/', async (_req, reply) => {
     return reply.sendFile('/pages/index.html');
@@ -67,7 +42,8 @@ fastify.get('/counter*', async (_req, reply) => {
 
 async function start() {
     try {
-        await fastify.listen(3000, '127.0.0.1'); // 127.0.0.1 must be specified or things will break
+        await fastify.listen(3000, '127.0.0.1'); // 127.0.0.1 must be specified or it will default to IPv6
+        console.log(`Statify listening on http://${fastify.server.address().address}:${fastify.server.address().port}`);
     } catch (err) {
         fastify.log.error(err);
         process.exit(1);
