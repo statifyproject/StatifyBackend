@@ -5,13 +5,22 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Statify Counter</title>
-        <link type="text/html" rel="stylesheet" href="/pages/counter/counter.css">
-        <script type="application" src="./counter.js"></script>
+        <link type="text/css" rel="stylesheet" href="/pages/counter/counter.css">
+        <script type="application/javascript" src="/pages/counter/counter.js"></script>
         <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     </head>
 
-    <body>
-
+    <body onload="build()">
+        <div class="background" id="background">
+            <center>
+                <div class="user">
+                    <img id="avatar" class="avatar" src="../../images/loading.webp">
+                    <div class="username">
+                        <h1 id="username">Loading...</h1>
+                    </div>
+                </div>
+            </center>
+        </div>
     </body>
 
 </html>

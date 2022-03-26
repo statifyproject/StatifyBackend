@@ -7,7 +7,7 @@ export async function endpoint(fastify) {
                 channel: req.params.channel,
             };
             await fetch(
-                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${data.channel}&key=${process.env.YOUTUBE_API_KEY}&maxResults=1&type=channel`
+                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${data.channel}&key=${process.env.YOUTUBE_API_KEY}&maxResults=1&type=channel` //This costs 100 credits
             )
                 .then(res => res.json())
                 .then(json => {
@@ -15,7 +15,7 @@ export async function endpoint(fastify) {
                     data.avatar = json.items[0].snippet.thumbnails.default.url;
                 });
             await fetch(
-                `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${data.id}&key=${process.env.YOUTUBE_API_KEY}`
+                `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${data.id}&key=${process.env.YOUTUBE_API_KEY}` //this costs 1 credit
             )
                 .then(res => res.json())
                 .then(json => {
