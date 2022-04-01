@@ -34,11 +34,6 @@ export async function endpoint(fastify) {
             data.banner = `https://cdn.discordapp.com/banners/${data.id}/${data.banner}`;
             data.icon = `https://cdn.discordapp.com/icons/${data.id}/${data.icon}`;
             
-            if(data.banner.includes('null'){delete data.banner}
-            if(data.icon.includes('null'){
-            delete data.icon
-            }
-            
             return {
                 code: 200,
                 data,
