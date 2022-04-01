@@ -11,7 +11,7 @@ export async function endpoint(fastify) {
                 .then(json => {
                     data.name = json.guild.name;
                     data.id = json.guild.id;
-                    data.splash = `https://cdn.discordapp.com/splashes/${data.id}/${json.guild.splash}.jpg`;
+                    data.splash = json.guild.splash;
                     data.icon = json.guild.icon;
                     data.banner = json.guild.banner;
                     data.description = json.guild.description;
@@ -21,19 +21,35 @@ export async function endpoint(fastify) {
                     data.members = json.approximate_member_count;
                     data.online = json.approximate_presence_count;
                 });
-            if (data.icon?.startsWith('a_')) {
-                data.icon += '.gif';
+
+            if (!data.banner) {
+                delete data.banner;
             } else {
-                data.icon += '.png';
+                data.banner = `https://cdn.discordapp.com/banners/${data.id}/${data.banner}`;
+                if (data.banner?.startsWith('a_')) {
+                    data.banner += '.gif';
+                } else {
+                    data.banner += '.png';
+                }
             }
-            if (data.banner?.startsWith('a_')) {
-                data.banner += '.gif';
+            if (!data.description) {
+                delete data.description;
+            }
+            if (!data.icon) {
+                delete data.icon;
             } else {
-                data.banner += '.png';
+                data.icon = `https://cdn.discordapp.com/icons/${data.id}/${data.icon}`;
+                if (data.icon?.startsWith('a_')) {
+                    data.icon += '.gif';
+                } else {
+                    data.icon += '.png';
+                }
             }
-            data.banner = `https://cdn.discordapp.com/banners/${data.id}/${data.banner}`;
-            data.icon = `https://cdn.discordapp.com/icons/${data.id}/${data.icon}`;
-            
+            if (!data.splash) {
+                delete data.splash;
+            } else {
+                data.splash = `https://cdn.discordapp.com/splashes/${data.id}/${data.splash}.jpg`;
+            }
             return {
                 code: 200,
                 data,
