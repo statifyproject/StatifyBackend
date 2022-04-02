@@ -33,10 +33,10 @@ export async function endpoint(fastify) {
                 }
             }
             if (!data.description) {
-                delete data.description;
+                data.description = 404;
             }
             if (!data.icon) {
-                delete data.icon;
+                data.icon = 404;
             } else {
                 data.icon = `https://cdn.discordapp.com/icons/${data.id}/${data.icon}`;
                 if (data.icon?.startsWith('a_')) {
@@ -46,7 +46,7 @@ export async function endpoint(fastify) {
                 }
             }
             if (!data.splash) {
-                delete data.splash;
+                data.splash = 404;
             } else {
                 data.splash = `https://cdn.discordapp.com/splashes/${data.id}/${data.splash}.jpg`;
             }

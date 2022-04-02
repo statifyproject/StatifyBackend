@@ -37,7 +37,7 @@ fastify.get('/', async (_req, reply) => {
 });
 
 fastify.get('/counter*', async (_req, reply) => {
-    return reply.sendFile('/pages/counter/counter.html');
+    return reply.sendFile('/pages/counter/builder.html');
 });
 
 async function start() {

@@ -1,8 +1,6 @@
 'use strict';
 async function build() {
-    const params = new Proxy(new URLSearchParams(window.location.search), {
-        get: (searchParams, prop) => searchParams.get(prop),
-    });
+    const params = new URLSearchParams(window.location.search);
     const data = {
         user: params.user,
         service: params.service,
