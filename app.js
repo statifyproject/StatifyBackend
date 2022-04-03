@@ -36,8 +36,12 @@ fastify.get('/', async (_req, reply) => {
     return reply.sendFile('/pages/index.html');
 });
 
-fastify.get('/counter*', async (_req, reply) => {
+fastify.get('/build*', async (_req, reply) => {
     return reply.sendFile('/pages/counter/builder.html');
+});
+
+fastify.get('/count*', async (_req, reply) => {
+    return reply.sendFile('/pages/counter/counter.html');
 });
 
 async function start() {
