@@ -1,24 +1,15 @@
 'use strict';
 async function build() {
-    const params = new Proxy(new URLSearchParams(window.location.search), {
-        get: (searchParams, prop) => searchParams.get(prop),
-    });
-
-    const data = {
-        user: params.user,
-        service: params.service.toLowerCase(),
-        stat: params.stat?.toLowerCase(),
-    };
-
-    await fetch(`https://api.statify.live/${data.service}/${data.user}`)
+    const params = new URLSearchParams(window.location.search);
+    const data = {};
+    await fetch(`https://api.statify.live/${params.get('service')}/${params.get('user')}`)
         .then(res => res.json())
         .then(json => {
             data.avatar = json.data?.avatar || json.data?.icon;
             data.username = json.data?.username || json.data?.name || json.data?.channel;
             data.code = json.code;
-            data.statValue = json.data?.[data.stat];
+            data.statValue = json.data?.[params.get('stat')];
         });
-
     if (data.code == 200) {
         document.getElementById('avatar').src = data.avatar;
         document.getElementById('username').innerHTML = data.username;
