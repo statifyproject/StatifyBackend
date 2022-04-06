@@ -105,3 +105,6 @@ dist
 
 # MacOS customization files
 *.DS_Store
+
+# Pull File
+pull.sh
