@@ -6,7 +6,7 @@ async function build() {
         .then(res => res.json())
         .then(json => {
             data.avatar = json.data?.avatar || json.data?.icon;
-            data.username = json.data?.username || json.data?.name || json.data?.channel;
+            data.username = json.data?.username || json.data?.name;
             data.code = json.code;
             data.statValue = json.data?.[params.get('stat')];
         });
