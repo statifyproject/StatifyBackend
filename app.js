@@ -38,6 +38,10 @@ fastify.addHook('preHandler', (_req, reply, done) => {
     done();
 });
 
+fastify.get('/favicon.ico', (_req, reply) => {
+    reply.sendFile('favicon.svg');
+});
+
 fastify.get('/', async (_req, reply) => {
     return reply.sendFile('/pages/index.html');
 });
