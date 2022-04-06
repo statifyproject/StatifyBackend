@@ -3,7 +3,7 @@
     "type": "module",
     "dependencies": {
         "dotenv": "^16.0.0",
-        "fastify": "^3.27.4",
+        "fastify": "^3.28.0",
         "fastify-favicon": "^3.1.0",
         "fastify-static": "^4.6.1",
         "undici": "^5.0.0"
