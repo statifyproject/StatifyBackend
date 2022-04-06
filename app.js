@@ -13,7 +13,6 @@ fastify.register(fastifyStatic, {
 });
 fastify.register(fastifyFavicon, {
     path: join(resolve('.'), 'public/images'),
-    name: 'favicon.svg',
 });
 
 async function tryLoad(name) {
@@ -32,15 +31,6 @@ await tryLoad('steam');
 await tryLoad('twitch');
 await tryLoad('twitter');
 await tryLoad('youtube');
-
-fastify.addHook('preHandler', (_req, reply, done) => {
-    reply.header('Access-Control-Allow-Origin', '*');
-    done();
-});
-
-fastify.get('/favicon.ico', (_req, reply) => {
-    reply.sendFile('favicon.svg');
-});
 
 fastify.get('/', async (_req, reply) => {
     return reply.sendFile('/pages/index.html');
