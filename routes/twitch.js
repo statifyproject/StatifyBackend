@@ -11,9 +11,7 @@ export async function endpoint(fastify) {
             if (isNaN(data.username)) {
                 await fetch(
                     `https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`,
-                    {
-                        method: 'POST',
-                    }
+                    {method: 'POST'}
                 )
                     .then(res => res.json())
                     .then(json => (twitchOauth = json.access_token));

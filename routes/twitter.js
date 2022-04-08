@@ -54,7 +54,7 @@ export async function endpoint(fastify) {
                     message: 'User not found',
                 };
             } else {
-                console.error(`Threw 500 error in Twitter module: ${err.message}`);
+                console.error(`Threw 500 error in Twitter module: ${err}`);
                 return {code: 500, message: err.message};
             }
         }

@@ -67,7 +67,7 @@ export async function endpoint(fastify) {
                 };
             }
         } catch (err) {
-            console.error(`Threw 500 error in Steam module: ${err.message}`);
+            console.error(`Threw 500 error in Steam module: ${err}`);
             return {code: 500, message: err.message};
         }
     });

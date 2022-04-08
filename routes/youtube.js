@@ -7,7 +7,7 @@ export async function endpoint(fastify) {
                 id: req.params.id,
             };
             await fetch(
-                `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${data.id}&fields=items(snippet(title,description,thumbnails(high(url))),statistics(viewCount,subscriberCount,videoCount))&key=${process.env.YOUTUBE_API_KEY}` //this costs 1 credit
+                `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${data.id}&fields=items(snippet(title,description,thumbnails(high(url))),statistics(viewCount,subscriberCount,videoCount))&key=${process.env.YOUTUBE_API_KEY}`
             )
                 .then(res => res.json())
                 .then(json => {
@@ -23,7 +23,7 @@ export async function endpoint(fastify) {
                 data,
             };
         } catch (err) {
-            console.error(`Threw 500 error in YouTube module: ${err.message}`);
+            console.error(`Threw 500 error in YouTube module: ${err}`);
             return {code: 500, message: err.message};
         }
     });

@@ -32,6 +32,7 @@ await tryLoad('twitch');
 await tryLoad('twitter');
 await tryLoad('youtube');
 await tryLoad('tiktok');
+await tryLoad('osu');
 
 fastify.get('/', async (_req, reply) => {
     return reply.sendFile('/pages/index.html');

@@ -61,7 +61,7 @@ export async function endpoint(fastify) {
                     message: 'Discord Api Error: Invalid invite',
                 };
             } else {
-                console.error(`Threw 500 error in Discord module: ${err.message}`);
+                console.error(`Threw 500 error in Discord module: ${err}`);
                 return {code: 500, message: err.message};
             }
         }
