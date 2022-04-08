@@ -31,6 +31,7 @@ await tryLoad('steam');
 await tryLoad('twitch');
 await tryLoad('twitter');
 await tryLoad('youtube');
+await tryLoad('tiktok');
 
 fastify.get('/', async (_req, reply) => {
     return reply.sendFile('/pages/index.html');
