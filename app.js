@@ -38,14 +38,6 @@ fastify.get('/', async (_req, reply) => {
     return reply.sendFile('/pages/index.html');
 });
 
-fastify.get('/build*', async (_req, reply) => {
-    return reply.sendFile('/pages/counter/builder.html');
-});
-
-fastify.get('/count*', async (_req, reply) => {
-    return reply.sendFile('/pages/counter/counter.html');
-});
-
 async function start() {
     try {
         await fastify.listen(3000, '127.0.0.1'); // 127.0.0.1 must be specified or it will default to IPv6
