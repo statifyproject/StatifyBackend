@@ -1,5 +1,4 @@
 'use strict';
-import {fetch} from 'undici';
 export async function endpoint(fastify) {
     fastify.get('/tiktok/:username', async req => {
         try {

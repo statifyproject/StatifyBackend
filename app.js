@@ -13,6 +13,7 @@ fastify.register(fastifyStatic, {
 });
 fastify.register(fastifyFavicon, {
     path: join(resolve('.'), 'public/images'),
+    name: 'favicon.svg',
 });
 
 async function tryLoad(name) {
@@ -38,13 +39,10 @@ fastify.get('/', async (_req, reply) => {
     return reply.sendFile('/pages/index.html');
 });
 
-async function start() {
-    try {
-        await fastify.listen(3000, '127.0.0.1'); // 127.0.0.1 must be specified or it will default to IPv6
-        console.log(`Statify listening on http://${fastify.server.address().address}:${fastify.server.address().port}`);
-    } catch (err) {
-        fastify.log.error(err);
+fastify
+    .listen(3000, '127.0.0.1')
+    .then(address => console.log(`Listening on ${address}`))
+    .catch(err => {
+        console.error(err);
         process.exit(1);
-    }
-}
-start();
+    });

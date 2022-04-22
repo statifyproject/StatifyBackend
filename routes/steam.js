@@ -1,5 +1,4 @@
 'use strict';
-import {fetch} from 'undici';
 export async function endpoint(fastify) {
     fastify.get('/steam/:user', async req => {
         try {
@@ -29,29 +28,17 @@ export async function endpoint(fastify) {
                             (data.rawOnlineState = json.response.players[0].personastate);
                         data.avatar = json.response.players[0].avatar;
                     });
-                switch (data.rawOnlineState) {
-                    case 0:
-                        data.onlineState = 'Offline';
-                        break;
-                    case 1:
-                        data.onlineState = 'Online';
-                        break;
-                    case 2:
-                        data.onlineState = 'Busy';
-                        break;
-                    case 3:
-                        data.onlineState = 'Away';
-                        break;
-                    case 4:
-                        data.onlineState = 'Snooze';
-                        break;
-                    case 5:
-                        data.onlineState = 'Looking to trade';
-                        break;
-                    case 6:
-                        data.onlineState = 'Looking to play';
-                        break;
-                }
+
+                data.onlineState = [
+                    'Offline',
+                    'Online',
+                    'Busy',
+                    'Away',
+                    'Snooze',
+                    'looking to trade',
+                    'looking to play',
+                ][data.rawOnlineState];
+
                 if (data.error == 1) {
                     delete data.error;
                 }

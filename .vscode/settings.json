@@ -1,12 +1,16 @@
 {
     "cSpell.words": [
+        "beatmap",
         "loccountrycode",
         "locstatecode",
         "personaname",
         "personastate",
+        "playcounts",
+        "playstyle",
         "realname",
         "reqs",
         "Statify",
+        "statifybackend",
         "steamid"
     ]
 }

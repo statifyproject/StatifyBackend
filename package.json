@@ -1,14 +1,25 @@
 {
-    "private": true,
     "type": "module",
+    "name": "statifybackend",
+    "version": "1.0.0",
+    "description": "This is the repository for the Statify Backend. The production version can be accessed via https://api.statify.live.",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/statifyproject/StatifyBackend.git"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/statifyproject/StatifyBackend/issues"
+    },
+    "homepage": "https://github.com/statifyproject/StatifyBackend#readme",
     "dependencies": {
         "dotenv": "^16.0.0",
         "fastify": "^3.28.0",
         "fastify-favicon": "^3.1.0",
-        "fastify-static": "^4.6.1",
-        "undici": "^5.0.0"
-    },
-    "scripts": {
-        "start": "node app.js"
+        "fastify-static": "^4.6.1"
     }
 }
