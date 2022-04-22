@@ -13,7 +13,7 @@ fastify.register(fastifyStatic, {
 });
 fastify.register(fastifyFavicon, {
     path: join(resolve('.'), 'public/images'),
-    name: 'favicon.svg',
+    name: 'favicon.ico',
 });
 
 async function tryLoad(name) {
