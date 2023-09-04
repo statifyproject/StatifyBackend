@@ -18,7 +18,7 @@
     "homepage": "https://github.com/statifyproject/StatifyBackend#readme",
     "dependencies": {
         "dotenv": "^16.0.0",
-        "fastify": "^4.6.0",
+        "fastify": "^4.22.2",
         "fastify-favicon": "^4.2.0",
         "fastify-static": "^4.6.1"
     }
