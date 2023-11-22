@@ -61,7 +61,7 @@ export async function endpoint(fastify) {
                 };
             } else {
                 console.error(`Threw 500 error in Discord module: ${err}`);
-                return {code: 500, message: err.message};
+                return { code: 500, message: err.message };
             }
         }
     });

@@ -1,8 +1,8 @@
 'use strict';
 import Fastify from 'fastify';
 const fastify = Fastify();
-import {resolve, join} from 'path';
-import fastifyStatic from 'fastify-static';
+import { resolve, join } from 'path';
+import fastifyStatic from '@fastify/static';
 import dotenv from 'dotenv';
 import fastifyFavicon from 'fastify-favicon';
 
@@ -18,7 +18,7 @@ fastify.register(fastifyFavicon, {
 
 async function tryLoad(name) {
     try {
-        const {endpoint} = await import(`./routes/${name}.js`);
+        const { endpoint } = await import(`./routes/${name}.js`);
         endpoint(fastify);
         console.info(`Loaded ${name}`);
     } catch (err) {
@@ -40,7 +40,7 @@ fastify.get('/', async (_req, reply) => {
 });
 
 fastify
-    .listen(3000, '127.0.0.1')
+    .listen({ port: 3000 })
     .then(address => console.log(`Listening on ${address}`))
     .catch(err => {
         console.error(err);

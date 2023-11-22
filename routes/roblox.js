@@ -31,7 +31,7 @@ export async function endpoint(fastify) {
                     data,
                 };
             } else {
-                return {code: 400, message: 'Please enter a username, not a user ID'};
+                return { code: 400, message: 'Please enter a username, not a user ID' };
             }
         } catch (err) {
             if (err.message == 'Roblox API Error: User not found') {
@@ -41,7 +41,7 @@ export async function endpoint(fastify) {
                 };
             } else {
                 console.error(`Threw 500 error in Roblox module: ${err}`);
-                return {code: 500, message: err.message};
+                return { code: 500, message: err.message };
             }
         }
     });

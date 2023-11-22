@@ -8,7 +8,7 @@ export async function endpoint(fastify) {
             };
             await fetch('https://osu.ppy.sh/oauth/token', {
                 method: 'POST',
-                headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
+                headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     client_id: process.env.OSU_CLIENT_ID,
                     client_secret: process.env.OSU_CLIENT_SECRET,
@@ -21,7 +21,7 @@ export async function endpoint(fastify) {
                     osuOauth = json.access_token;
                 });
             await fetch(`https://osu.ppy.sh/api/v2/users/${data.lookup}`, {
-                headers: {Authorization: `Bearer ${osuOauth}`},
+                headers: { Authorization: `Bearer ${osuOauth}` },
             })
                 .then(res => res.json())
                 .then(json => {
@@ -68,10 +68,10 @@ export async function endpoint(fastify) {
             };
         } catch (err) {
             if (err.message == "Cannot read properties of undefined (reading 'name')") {
-                return {code: 404, message: 'User does not exist'};
+                return { code: 404, message: 'User does not exist' };
             } else {
                 console.error(`Threw 500 error in Osu! module: ${err}`);
-                return {code: 500, message: err.message};
+                return { code: 500, message: err.message };
             }
         }
     });

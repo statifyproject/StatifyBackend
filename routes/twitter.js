@@ -16,7 +16,7 @@ export async function endpoint(fastify) {
                     .then(json => {
                         try {
                             data.error = json?.errors[0].detail;
-                        } catch (err) {}
+                        } catch (err) { }
                         data.id = json.data?.id;
                     });
                 if (data.error == `Could not find user with username: [${data.username}].`) {
@@ -54,7 +54,7 @@ export async function endpoint(fastify) {
                 };
             } else {
                 console.error(`Threw 500 error in Twitter module: ${err}`);
-                return {code: 500, message: err.message};
+                return { code: 500, message: err.message };
             }
         }
     });

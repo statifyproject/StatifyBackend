@@ -24,10 +24,10 @@ export async function endpoint(fastify) {
             };
         } catch (err) {
             if (err.message == "Cannot read properties of undefined (reading 'verified')") {
-                return {code: 404, message: 'User does not exist'};
+                return { code: 404, message: 'User does not exist' };
             } else {
                 console.error(`Threw 500 error in TikTok module: ${err}`);
-                return {code: 500, message: err.message};
+                return { code: 500, message: err.message };
             }
         }
     });
